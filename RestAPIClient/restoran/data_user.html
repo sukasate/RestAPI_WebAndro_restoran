@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="format-detection" content="telephone=no" />
+<meta name="robots" content="index, follow">
+<meta name="author" content="Wira Dwi Susanto">
+<title>Data User</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container" style="margin-top: 120px; margin-bottom: 120px;">
+<center><h3>Data User</h3></center>
+<form>
+<div class="form-group">
+<label for="id">ID:</label>
+<input type="text" class="form-control" placeholder="ID" value="" name="id" id="id">
+</div>
+<div class="form-group">
+<label for="fullname">Nama:</label>
+<input type="text" class="form-control" placeholder="Nama" value="" name="fullname" id="fullname">
+</div>
+<div class="form-group">
+<label for="email">Email:</label>
+<input type="email" class="form-control" placeholder="Email" value="" name="email" id="email">
+</div>
+<div class="form-group">
+<label for="username">Username:</label>
+<input type="text" class="form-control" placeholder="Username" value="" name="username" id="username">
+</div>
+<div class="form-group">
+<label for="password">Password:</label>
+<input type="password" class="form-control" placeholder="Password" value="" name="password" id="password">
+</div>
+<label for="gender">Jenis Kelamin:</label>
+<div class="form-check">
+<label class="form-check-label">
+<input type="radio" class="form-check-input" name="gender" id="gender" value="Laki-Laki" checked>Laki-laki
+</label>
+</div>
+<div class="form-check">
+<label class="form-check-label">
+<input type="radio" class="form-check-input" name="gender" id="gender" value="Perempuan">Perempuan
+</label>
+</div>
+<div class="form-group">
+<label for="address">Alamat:</label>
+<input type="text" class="form-control" placeholder="Alamat" value="" name="address" id="address">
+</div>
+<div class="form-group">
+<label for="telp">No HP:</label>
+<input type="text" class="form-control" placeholder="No Hp" value="" name="telp" id="telp">
+</div>
+<button type="button" style="display: inline-block;" class="btn btn-primary" name="deleteBtn" id="deleteBtn">DELETE</button> <button type="button" style="display: inline-block;" class="btn btn-primary" name="updateBtn" id="updateBtn">UPDATE</button>
+</form>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+$('#id').prop('disabled', true);
+var getUsername = window.localStorage.getItem('restoranapk_username');
+if(getUsername == "" || getUsername == null)
+{
+	window.location.href = 'login.html';
+}
+
+var getLastDataUserId = window.localStorage.getItem('restoranapk_lastdatauserid');
+
+if(getLastDataUserId == "")
+{
+	window.location.href = 'get_data_user.html';
+}
+
+if(getLastDataUserId != "")
+{
+	$.ajax({
+	        type:'GET',
+	        url: "https://rian-2007.000webhostapp.com/rest_android/User/get_user.php?id=" + getLastDataUserId,
+	        data:{},
+	        dataType:'JSON',
+	        'contentType': 'application/x-www-form-urlencoded',
+	        error:function(xhr, ajaxOptions, thrownError){
+	        alert('Terjadi kesalahan saat menampilkan data user. Silakan coba lagi!');
+	        },
+	        cache:false,
+	        beforeSend:function(request){
+	        },
+	        success:function(s){
+	        	if(s['result'][0]['id'] != null)
+	        	{
+	        		var idnya = s['result'][0]['id'];
+	        		var fullnamenya = s['result'][0]['fullname'];
+	        		var emailnya = s['result'][0]['email'];
+	        		var usernamenya = s['result'][0]['username'];
+	        		var passwordnya = s['result'][0]['password'];
+	        		var gendernya = s['result'][0]['gender'];
+	        		var addressnya = s['result'][0]['address'];
+	        		var telpnya = s['result'][0]['telp'];
+
+	        		$('#id').val(idnya);
+	        		$('#fullname').val(fullnamenya);
+	        		$('#email').val(emailnya);
+	        		$('#username').val(usernamenya);
+	        		$('#password').val(passwordnya);
+	        		$("input[id=gender][value=" + gendernya + "]").prop('checked', true);
+	        		$('#address').val(addressnya);
+	        		$('#telp').val(telpnya);
+
+	        		window.localStorage.setItem('restoranapk_lastdatauserid', '');
+	        	}
+	        }
+	});
+}
+
+$('#deleteBtn').click(function(){
+$.ajax({
+	        type:'GET',
+	        url: "https://rian-2007.000webhostapp.com/rest_android/User/delete_user.php?id=" + getLastDataUserId,
+	        data:{},
+	        'contentType': 'application/x-www-form-urlencoded',
+	        error:function(xhr, ajaxOptions, thrownError){
+	        alert('Terjadi kesalahan saat menghapus data user. Silakan coba lagi!');
+	        },
+	        cache:false,
+	        beforeSend:function(request){
+	        },
+	        success:function(s){
+	        	if(s == "Data user berhasil dihapus")
+	        	{
+	        		alert(s);
+	        		window.location.href = 'get_data_user.html';
+	        	}
+
+	        	else
+	        	{
+	        		alert('Terjadi kesalahan saat menghapus data user. Silakan coba lagi!');
+	        	}
+	        }
+	});
+});
+
+$('#updateBtn').click(function(){
+var getId = getLastDataUserId;
+var fullname = $('#fullname').val();
+var email = $('#email').val();
+var username = $('#username').val();
+var password = $('#password').val();
+var gender = $("input:radio[id=gender]:checked").val();
+var address = $('#address').val();
+var telp = $('#telp').val();
+
+$.ajax({
+	        type:'POST',
+	        url: "https://rian-2007.000webhostapp.com/rest_android/User/update_user.php",
+	        data:{id:getId, fullname:fullname, email:email, username:username, password:password, gender:gender, address:address, telp:telp},
+	        'contentType': 'application/x-www-form-urlencoded',
+	        error:function(xhr, ajaxOptions, thrownError){
+	        alert('Terjadi kesalahan saat update data user. Silakan coba lagi!');
+	        },
+	        cache:false,
+	        beforeSend:function(request){
+	        },
+	        success:function(s){
+	        	if(s == "Data user berhasil diupdate")
+	        	{
+	        		alert(s);
+	        		window.location.href = 'get_data_user.html';
+	        	}
+
+	        	else
+	        	{
+	        		alert('Terjadi kesalahan saat update data user. Silakan coba lagi!');
+	        	}
+	        }
+});
+});
+});
+</script>
+</body>
+</html>

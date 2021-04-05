@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="format-detection" content="telephone=no" />
+<meta name="robots" content="index, follow">
+<meta name="author" content="Wira Dwi Susanto">
+<title>Get Data User</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container" style="margin-top: 120px; margin-bottom: 120px;">
+<center><h3>Data User</h3></center>
+<form>
+<div name="hasilDataUser" id="hasilDataUser" style="cursor: pointer;"></div>
+<div name="break" id="break" style="margin-bottom: 80px;"></div>
+<button type="button" class="btn btn-primary" name="backBtn" id="backBtn">KEMBALI</button>
+</form>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+var getUsername = window.localStorage.getItem('restoranapk_username');
+if(getUsername == "" || getUsername == null)
+{
+	window.location.href = 'login.html';
+}
+
+$.ajax({
+	        type:'GET',
+	        url: "https://rian-2007.000webhostapp.com/rest_android/User/get_all_user.php",
+	        data:{},
+	        dataType:'JSON',
+	        'contentType': 'application/x-www-form-urlencoded',
+	        error:function(xhr, ajaxOptions, thrownError){
+	        alert('Terjadi kesalahan saat menampilkan data user. Silakan coba lagi!');
+	        },
+	        cache:false,
+	        beforeSend:function(request){
+	        },
+	        success:function(s){
+	        	$('#hasilDataUser').html('');
+		        var getidnya = 0;
+		        for(var a = 0; a < s['result'].length; a++)
+            	{
+            		getidnya = parseInt(s['result'][a]['id']);
+            		$('#hasilDataUser').append('<p class="dataUserIdList" style="line-height: 20px;" data-id="' + getidnya +'">' + getidnya + '<br>'+ s['result'][a]['fullname'] + '</p><hr>');
+            	}
+	        }
+});
+
+$('#backBtn').click(function(){
+window.location.href = 'menu_utama.html';
+});
+
+$(document).on('click', '.dataUserIdList', function(){
+var data = $(this).data();
+var getId = data.id;
+
+window.localStorage.setItem('restoranapk_lastdatauserid', getId);
+window.location.href = 'data_user.html';
+});
+});
+</script>
+</body>
+</html>

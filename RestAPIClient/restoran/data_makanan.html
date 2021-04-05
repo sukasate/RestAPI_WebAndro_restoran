@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="format-detection" content="telephone=no" />
+<meta name="robots" content="index, follow">
+<meta name="author" content="Wira Dwi Susanto">
+<title>Data Makanan</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container" style="margin-top: 120px; margin-bottom: 120px;">
+<center><h3>Silakan Pesan Makanan</h3></center>
+<form>
+<div class="form-group">
+<label for="nama_makanan">Nama Makanan:</label>
+<input type="text" class="form-control" placeholder="Nama Makanan" value="" name="nama_makanan" id="nama_makanan">
+</div>
+<div class="form-group">
+<label for="asal_makanan">Asal Makanan:</label>
+<input type="text" class="form-control" placeholder="Asal Makanan" value="" name="asal_makanan" id="asal_makanan">
+</div>
+<div class="form-group">
+<label for="harga_makanan">Harga Makanan:</label>
+<input type="text" class="form-control" placeholder="Harga Makanan" value="" name="harga_makanan" id="harga_makanan">
+</div>
+<button type="button" class="btn btn-primary" name="backBtn" id="backBtn">KEMBALI</button> <button type="button" class="btn btn-primary" name="hapusMakananBtn" id="hapusMakananBtn">HAPUS MAKANAN</button> <button type="button" class="btn btn-primary" name="updateMakananBtn" id="updateMakananBtn">UPDATE MAKANAN</button>
+</form>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+var getUsername = window.localStorage.getItem('restoranapk_username');
+if(getUsername == "" || getUsername == null)
+{
+	window.location.href = 'login.html';
+}
+
+var getLastMakananId = window.localStorage.getItem('restoranapk_lastdatamakananid');
+
+if(getLastMakananId == "")
+{
+	window.location.href = 'lihat_makanan.html';
+}
+
+if(getLastMakananId != "")
+{
+	$.ajax({
+	        type:'GET',
+	        url: "https://rian-2007.000webhostapp.com/rest_android/Makanan/get_makanan.php?no=" + getLastMakananId,
+	        data:{},
+	        dataType:'JSON',
+	        'contentType': 'application/x-www-form-urlencoded',
+	        error:function(xhr, ajaxOptions, thrownError){
+	        alert('Terjadi kesalahan saat menampilkan data makanan. Silakan coba lagi!');
+	        },
+	        cache:false,
+	        beforeSend:function(request){
+	        },
+	        success:function(s){
+	        	if(s['result'][0]['nama_makanan'] != null)
+	        	{
+	        		var nama_makanannya = s['result'][0]['nama_makanan'];
+	        		var asal_makanannya = s['result'][0]['asal_makanan'];
+	        		var harga_makanannya = s['result'][0]['harga_makanan'];
+
+	        		$('#nama_makanan').val(nama_makanannya);
+	        		$('#asal_makanan').val(asal_makanannya);
+	        		$('#harga_makanan').val(harga_makanannya);
+
+	        		window.localStorage.setItem('restoranapk_lastdatamakananid', '');
+	        	}
+	        }
+	});
+}
+
+$('#backBtn').click(function(){
+window.location.href = 'menu_utama.html';
+});
+
+$('#hapusMakananBtn').click(function(){
+$.ajax({
+	        type:'GET',
+	        url: "https://rian-2007.000webhostapp.com/rest_android/Makanan/delete_makanan.php?no=" + getLastMakananId,
+	        data:{},
+	        'contentType': 'application/x-www-form-urlencoded',
+	        error:function(xhr, ajaxOptions, thrownError){
+	        alert('Terjadi kesalahan saat menghapus data makanan. Silakan coba lagi!');
+	        },
+	        cache:false,
+	        beforeSend:function(request){
+	        },
+	        success:function(s){
+	        	if(s == "Makanan Berhasil dihapus")
+	        	{
+	        		alert(s);
+	        		window.location.href = 'lihat_makanan.html';
+	        	}
+
+	        	else
+	        	{
+	        		alert('Terjadi kesalahan saat menghapus data makanan. Silakan coba lagi!');
+	        	}
+	        }
+	});
+});
+
+$('#updateMakananBtn').click(function(){
+var getIdMakanannya = getLastMakananId;
+var nama_makanannya = $('#nama_makanan').val();
+var asal_makanannya = $('#asal_makanan').val();
+var harga_makanannya = $('#harga_makanan').val();
+
+$.ajax({
+	        type:'POST',
+	        url: "https://rian-2007.000webhostapp.com/rest_android/Makanan/update_makanan.php",
+	        data:{no:getIdMakanannya, nama_makanan:nama_makanannya, asal_makanan:asal_makanannya, harga_makanan:harga_makanannya},
+	        'contentType': 'application/x-www-form-urlencoded',
+	        error:function(xhr, ajaxOptions, thrownError){
+	        alert('Terjadi kesalahan saat update data makanan. Silakan coba lagi!');
+	        },
+	        cache:false,
+	        beforeSend:function(request){
+	        },
+	        success:function(s){
+	        	if(s == "Makanan Berhasil diperbaharui")
+	        	{
+	        		alert(s);
+	        		window.location.href = 'lihat_makanan.html';
+	        	}
+
+	        	else
+	        	{
+	        		alert('Terjadi kesalahan saat update data makanan. Silakan coba lagi!');
+	        	}
+	        }
+});
+});
+});
+</script>
+</body>
+</html>

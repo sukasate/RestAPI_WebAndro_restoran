@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="format-detection" content="telephone=no" />
+<meta name="robots" content="index, follow">
+<meta name="author" content="Wira Dwi Susanto">
+<title>Data Minuman</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container" style="margin-top: 120px; margin-bottom: 120px;">
+<center><h3>Silakan Pesan Minuman</h3></center>
+<form>
+<div class="form-group">
+<label for="nama_minuman">Nama Minuman:</label>
+<input type="text" class="form-control" placeholder="Nama Minuman" value="" name="nama_minuman" id="nama_minuman">
+</div>
+<div class="form-group">
+<label for="perusahaan">Perusahaan:</label>
+<input type="text" class="form-control" placeholder="Perusahaan" value="" name="perusahaan" id="perusahaan">
+</div>
+<div class="form-group">
+<label for="netto">Netto:</label>
+<input type="text" class="form-control" placeholder="Netto" value="" name="netto" id="netto">
+</div>
+<label for="sedotan">Sedotan:</label>
+<div class="form-check">
+<label class="form-check-label">
+<input type="radio" class="form-check-input" name="sedotan" id="sedotan" value="Yes" checked>Yes
+</label>
+</div>
+<div class="form-check">
+<label class="form-check-label">
+<input type="radio" class="form-check-input" name="sedotan" id="sedotan" value="No">No
+</label>
+</div>
+<label for="tempat">Tempat:</label>
+<div class="form-check">
+<label class="form-check-label">
+<input type="radio" class="form-check-input" name="tempat" id="tempat" value="Gelas" checked>Gelas
+</label>
+</div>
+<div class="form-check">
+<label class="form-check-label">
+<input type="radio" class="form-check-input" name="tempat" id="tempat" value="Cup">Cup
+</label>
+</div>
+<div class="form-check">
+<label class="form-check-label">
+<input type="radio" class="form-check-input" name="tempat" id="tempat" value="Bottle">Bottle
+</label>
+</div>
+<div class="form-group">
+<label for="nama_pemesan">Nama Pemesan:</label>
+<input type="text" class="form-control" placeholder="Nama Pemesan" value="" name="nama_pemesan" id="nama_pemesan">
+</div>
+<button type="button" class="btn btn-primary" name="backBtn" id="backBtn">KEMBALI</button> <button type="button" class="btn btn-primary" name="hapusMinumanBtn" id="hapusMinumanBtn">DELETE</button> <button type="button" class="btn btn-primary" name="updateMinumanBtn" id="updateMinumanBtn">UPDATE</button>
+</form>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+var getUsername = window.localStorage.getItem('restoranapk_username');
+if(getUsername == "" || getUsername == null)
+{
+	window.location.href = 'login.html';
+}
+
+var getLastMinumanId = window.localStorage.getItem('restoranapk_lastdataminumanid');
+
+if(getLastMinumanId == "")
+{
+	window.location.href = 'lihat_makanan.html';
+}
+
+if(getLastMinumanId != "")
+{
+	$.ajax({
+	        type:'GET',
+	        url: "https://rian-2007.000webhostapp.com/rest_android/Minuman/get_minuman.php?no=" + getLastMinumanId,
+	        data:{},
+	        dataType:'JSON',
+	        'contentType': 'application/x-www-form-urlencoded',
+	        error:function(xhr, ajaxOptions, thrownError){
+	        alert('Terjadi kesalahan saat menampilkan data minuman. Silakan coba lagi!');
+	        },
+	        cache:false,
+	        beforeSend:function(request){
+	        },
+	        success:function(s){
+	        	if(s['result'][0]['nama_minuman'] != null)
+	        	{
+	        		var nama_minumannya = s['result'][0]['nama_minuman'];
+					var perusahaannya = s['result'][0]['perusahaan'];
+					var nettonya = s['result'][0]['netto'];
+					var sedotannya = s['result'][0]['sedotan'];
+					var tempatnya = s['result'][0]['tempat'];
+					var nama_pemesannya = s['result'][0]['nama_pemesan'];
+
+	        		$('#nama_minuman').val(nama_minumannya);
+	        		$('#perusahaan').val(perusahaannya);
+	        		$('#netto').val(nettonya);
+	        		$("input[id=sedotan][value=" + sedotannya + "]").prop('checked', true);
+	        		$("input[id=tempat][value=" + tempatnya + "]").prop('checked', true);
+	        		$('#nama_pemesan').val(nama_pemesannya);
+
+	        		window.localStorage.setItem('restoranapk_lastdataminumanid', '');
+	        	}
+	        }
+	});
+}
+
+$('#backBtn').click(function(){
+window.location.href = 'menu_utama.html';
+});
+
+$('#hapusMinumanBtn').click(function(){
+$.ajax({
+	        type:'GET',
+	        url: "https://rian-2007.000webhostapp.com/rest_android/Minuman/delete_minuman.php?no=" + getLastMinumanId,
+	        data:{},
+	        'contentType': 'application/x-www-form-urlencoded',
+	        error:function(xhr, ajaxOptions, thrownError){
+	        alert('Terjadi kesalahan saat menghapus data minuman. Silakan coba lagi!');
+	        },
+	        cache:false,
+	        beforeSend:function(request){
+	        },
+	        success:function(s){
+	        	if(s == "Minuman Berhasil dihapus")
+	        	{
+	        		alert(s);
+	        		window.location.href = 'lihat_minuman.html';
+	        	}
+
+	        	else
+	        	{
+	        		alert('Terjadi kesalahan saat menghapus data minuman. Silakan coba lagi!');
+	        	}
+	        }
+	});
+});
+
+$('#updateMinumanBtn').click(function(){
+var getIdMinumannya = getLastMinumanId;
+var nama_minumannya = $('#nama_minuman').val();
+var perusahaannya = $('#perusahaan').val();
+var nettonya = $('#netto').val();
+var sedotannya = $("input:radio[id=sedotan]:checked").val();
+var tempatnya = $("input:radio[id=tempat]:checked").val();
+var nama_pemesannya = $('#nama_pemesan').val();
+
+$.ajax({
+	        type:'POST',
+	        url: "https://rian-2007.000webhostapp.com/rest_android/Minuman/update_minuman.php",
+	        data:{no:getIdMinumannya, nama_minuman:nama_minumannya, perusahaan:perusahaannya, netto:nettonya, sedotan:sedotannya, tempat:tempatnya, nama_pemesan:nama_pemesannya},
+	        'contentType': 'application/x-www-form-urlencoded',
+	        error:function(xhr, ajaxOptions, thrownError){
+	        alert('Terjadi kesalahan saat update data minuman. Silakan coba lagi!');
+	        },
+	        cache:false,
+	        beforeSend:function(request){
+	        },
+	        success:function(s){
+	        	if(s == "Minuman Berhasil diperbaharui")
+	        	{
+	        		alert(s);
+	        		window.location.href = 'lihat_minuman.html';
+	        	}
+
+	        	else
+	        	{
+	        		alert('Terjadi kesalahan saat update data minuman. Silakan coba lagi!');
+	        	}
+	        }
+});
+});
+});
+</script>
+</body>
+</html>
